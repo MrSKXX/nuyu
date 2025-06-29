@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Stock Location Medical Form View -->
+        <record id="stock_location_form_medical" model="ir.ui.view">
+            <field name="name">stock.location.form.medical</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <field name="comment" position="after">
+                    <group string="Medical Location Settings" attrs="{'invisible': [('location_type', '=', False)]}">
+                        <group>
+                            <field name="location_type"/>
+                            <field name="responsible_user_id"/>
+                        </group>
+                        <group string="Refrigeration Settings" attrs="{'invisible': [('has_refrigeration', '=', False)]}">
+                            <field name="has_refrigeration"/>
+                            <field name="temperature_min" attrs="{'invisible': [('has_refrigeration', '=', False)]}"/>
+                            <field name="temperature_max" attrs="{'invisible': [('has_refrigeration', '=', False)]}"/>
+                        </group>
+                    </group>
+                </field>
+            </field>
+        </record>
+        
+        <!-- Medical Locations Tree View -->
+        <record id="stock_location_tree_medical" model="ir.ui.view">
+            <field name="name">stock.location.tree.medical</field>
+            <field name="model">stock.location</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Locations">
+                    <field name="name"/>
+                    <field name="location_type"/>
+                    <field name="has_refrigeration"/>
+                    <field name="responsible_user_id"/>
+                    <field name="usage"/>
+                    <field name="parent_path"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Medical Locations Search View -->
+        <record id="stock_location_search_medical" model="ir.ui.view">
+            <field name="name">stock.location.search.medical</field>
+            <field name="model">stock.location</field>
+            <field name="arch" type="xml">
+                <search string="Search Medical Locations">
+                    <field name="name"/>
+                    <field name="location_type"/>
+                    <field name="responsible_user_id"/>
+                    <separator/>
+                    <filter string="Treatment Rooms" name="treatment_rooms" 
+                            domain="[('location_type', 'in', ['room1', 'room2', 'room3'])]"/>
+                    <filter string="Refrigerated" name="refrigerated" 
+                            domain="[('has_refrigeration', '=', True)]"/>
+                    <filter string="Main Warehouse" name="warehouse" 
+                            domain="[('location_type', '=', 'warehouse')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Location Type" name="group_type" context="{'group_by': 'location_type'}"/>
+                        <filter string="Responsible" name="group_responsible" context="{'group_by': 'responsible_user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

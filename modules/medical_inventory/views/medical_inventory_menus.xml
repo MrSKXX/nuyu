@@ -1,14 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data>
+        
+        <!-- Sequences -->
+        <record id="seq_medical_consignment" model="ir.sequence">
+            <field name="name">Medical Consignment</field>
+            <field name="code">medical.consignment</field>
+            <field name="prefix">CONS</field>
+            <field name="padding">4</field>
+        </record>
+        
+        <record id="seq_medical_room_transfer" model="ir.sequence">
+            <field name="name">Medical Room Transfer</field>
+            <field name="code">medical.room.transfer</field>
+            <field name="prefix">RT</field>
+            <field name="padding">4</field>
+        </record>
+        
+        <!-- Actions -->
+        <record id="action_medical_consignment" model="ir.actions.act_window">
+            <field name="name">Consignment Inventory</field>
+            <field name="res_model">medical.consignment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first consignment
+                </p>
+                <p>
+                    Track products received on consignment from suppliers.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_room_transfer" model="ir.actions.act_window">
+            <field name="name">Room Transfers</field>
+            <field name="res_model">medical.room.transfer</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first room transfer
+                </p>
+                <p>
+                    Transfer products between treatment rooms and warehouse.
+                </p>
+            </field>
+        </record>
+        
+        <record id="action_medical_products" model="ir.actions.act_window">
+            <field name="name">Medical Products</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('medical_category', '!=', False)]</field>
+            <field name="context">{'default_medical_category': 'injectable'}</field>
+        </record>
+        
+        <record id="action_medical_locations" model="ir.actions.act_window">
+            <field name="name">Medical Locations</field>
+            <field name="res_model">stock.location</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('location_type', '!=', False)]</field>
+        </record>
+        
+        <record id="action_expiry_dashboard" model="ir.actions.act_window">
+            <field name="name">Expiry Dashboard</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[('expiry_status', 'in', ['expiring_soon', 'expired'])]</field>
+        </record>
         
         <!-- Medical Inventory Main Menu -->
         <menuitem id="menu_medical_inventory_root"
                   name="Medical Inventory"
                   groups="base.group_user"
-                  sequence="15"
-                  action=""
-                  active="True"/>
+                  sequence="15"/>
         
         <!-- Operations Menu -->
         <menuitem id="menu_medical_operations"
@@ -16,10 +80,40 @@
                   parent="menu_medical_inventory_root"
                   sequence="10"/>
         
+        <menuitem id="menu_room_transfers"
+                  name="Room Transfers"
+                  parent="menu_medical_operations"
+                  action="action_room_transfer"
+                  sequence="10"/>
+        
+        <menuitem id="menu_consignment"
+                  name="Consignment"
+                  parent="menu_medical_operations"
+                  action="action_medical_consignment"
+                  sequence="20"/>
+        
+        <menuitem id="menu_expiry_dashboard"
+                  name="Expiry Dashboard"
+                  parent="menu_medical_operations"
+                  action="action_expiry_dashboard"
+                  sequence="30"/>
+        
         <!-- Configuration Menu -->
         <menuitem id="menu_medical_config"
                   name="Configuration"
                   parent="menu_medical_inventory_root"
+                  sequence="20"/>
+        
+        <menuitem id="menu_medical_products"
+                  name="Medical Products"
+                  parent="menu_medical_config"
+                  action="action_medical_products"
+                  sequence="10"/>
+        
+        <menuitem id="menu_medical_locations"
+                  name="Medical Locations"
+                  parent="menu_medical_config"
+                  action="action_medical_locations"
                   sequence="20"/>
         
     </data>

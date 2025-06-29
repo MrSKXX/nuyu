@@ -29,8 +29,8 @@
                                 <field name="responsible_user_id"/>
                             </group>
                             <group>
-                                <field name="source_location_id" domain="[('location_type', 'in', ['warehouse', 'room1', 'room2', 'room3', 'doctor_private'])]"/>
-                                <field name="dest_location_id" domain="[('location_type', 'in', ['warehouse', 'room1', 'room2', 'room3', 'doctor_private'])]"/>
+                                <field name="source_location_id"/>
+                                <field name="dest_location_id"/>
                             </group>
                         </group>
                         <notebook>
@@ -38,10 +38,9 @@
                                 <field name="line_ids">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
-                                        <field name="lot_id" domain="[('product_id', '=', product_id)]"/>
+                                        <field name="lot_id"/>
                                         <field name="quantity"/>
                                         <field name="quantity_available"/>
-                                        <field name="expiry_date"/>
                                     </tree>
                                 </field>
                             </page>
@@ -50,10 +49,6 @@
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="message_ids"/>
-                    </div>
                 </form>
             </field>
         </record>
@@ -71,21 +66,6 @@
                     <field name="responsible_user_id"/>
                     <field name="state"/>
                 </tree>
-            </field>
-        </record>
-        
-        <!-- Room Transfer Action -->
-        <record id="action_room_transfer" model="ir.actions.act_window">
-            <field name="name">Room Transfers</field>
-            <field name="res_model">medical.room.transfer</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create your first room transfer
-                </p>
-                <p>
-                    Track and manage transfers between treatment rooms and main warehouse.
-                </p>
             </field>
         </record>
         

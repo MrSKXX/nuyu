@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Product Template Medical Fields Enhancement -->
+        <record id="product_template_form_medical" model="ir.ui.view">
+            <field name="name">product.template.form.medical</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <!-- Add Medical Category next to Product Category -->
+                <field name="categ_id" position="after">
+                    <field name="medical_category"/>
+                </field>
+                
+                <!-- Add Medical Information Page -->
+                <page name="general_information" position="after">
+                    <page string="Medical Information" attrs="{'invisible': [('medical_category', '=', False)]}">
+                        <group>
+                            <group string="Medical Category &amp; Tracking">
+                                <field name="medical_category"/>
+                                <field name="requires_expiry"/>
+                                <field name="requires_batch"/>
+                                <field name="default_shelf_life_days" attrs="{'invisible': [('requires_expiry', '=', False)]}"/>
+                                <field name="minimum_stock_days" attrs="{'invisible': [('requires_expiry', '=', False)]}"/>
+                            </group>
+                            <group string="Storage Requirements">
+                                <field name="requires_refrigeration"/>
+                                <field name="refrigeration_temp_min" attrs="{'invisible': [('requires_refrigeration', '=', False)]}"/>
+                                <field name="refrigeration_temp_max" attrs="{'invisible': [('requires_refrigeration', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <group string="Consignment Settings" attrs="{'invisible': [('is_consignment', '=', False)]}">
+                            <field name="is_consignment"/>
+                            <field name="consignment_supplier_id" attrs="{'invisible': [('is_consignment', '=', False)]}"/>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
+        
+        <!-- Medical Products Tree View -->
+        <record id="product_template_tree_medical" model="ir.ui.view">
+            <field name="name">product.template.tree.medical</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Products">
+                    <field name="name"/>
+                    <field name="medical_category"/>
+                    <field name="requires_expiry"/>
+                    <field name="requires_refrigeration"/>
+                    <field name="list_price"/>
+                    <field name="categ_id"/>
+                    <field name="qty_available"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Medical Products Search View -->
+        <record id="product_template_search_medical" model="ir.ui.view">
+            <field name="name">product.template.search.medical</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <search string="Search Medical Products">
+                    <field name="name"/>
+                    <field name="medical_category"/>
+                    <separator/>
+                    <filter string="Injectable" name="injectable" domain="[('medical_category', '=', 'injectable')]"/>
+                    <filter string="Consumable" name="consumable" domain="[('medical_category', '=', 'consumable')]"/>
+                    <filter string="Retail" name="retail" domain="[('medical_category', '=', 'retail')]"/>
+                    <filter string="Device" name="device" domain="[('medical_category', '=', 'device')]"/>
+                    <separator/>
+                    <filter string="Requires Refrigeration" name="refrigerated" domain="[('requires_refrigeration', '=', True)]"/>
+                    <filter string="Consignment Products" name="consignment" domain="[('is_consignment', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Medical Category" name="group_medical_category" context="{'group_by': 'medical_category'}"/>
+                        <filter string="Product Category" name="group_category" context="{'group_by': 'categ_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

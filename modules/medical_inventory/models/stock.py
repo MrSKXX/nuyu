@@ -27,28 +27,9 @@ class StockQuant(models.Model):
         ('good', 'Good'),
         ('expiring_soon', 'Expiring Soon'),
         ('expired', 'Expired')
-    ], string='Expiry Status', compute='_compute_expiry_status', store=True)
+    ], string='Expiry Status', default='good')
     
-    days_to_expiry = fields.Integer(string='Days to Expiry', compute='_compute_expiry_status', store=True)
-    
-    @api.depends('lot_id.expiration_date')
-    def _compute_expiry_status(self):
-        today = datetime.now().date()
-        for quant in self:
-            if quant.lot_id and quant.lot_id.expiration_date:
-                exp_date = quant.lot_id.expiration_date.date()
-                days_diff = (exp_date - today).days
-                quant.days_to_expiry = days_diff
-                
-                if days_diff < 0:
-                    quant.expiry_status = 'expired'
-                elif days_diff <= quant.product_id.minimum_stock_days:
-                    quant.expiry_status = 'expiring_soon'
-                else:
-                    quant.expiry_status = 'good'
-            else:
-                quant.days_to_expiry = 0
-                quant.expiry_status = 'good'
+    days_to_expiry = fields.Integer(string='Days to Expiry', default=0)
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -77,10 +58,13 @@ class StockLot(models.Model):
     received_date = fields.Date(string='Received Date', default=fields.Date.context_today)
     storage_requirements = fields.Text(string='Storage Requirements')
     
+    # Add our own expiry field
+    expiry_date = fields.Date(string='Expiry Date')
+    
     @api.model
     def get_expiring_lots(self, days=30):
         cutoff_date = datetime.now().date() + timedelta(days=days)
         return self.search([
-            ('expiration_date', '<=', cutoff_date),
-            ('expiration_date', '>=', datetime.now().date())
+            ('expiry_date', '<=', cutoff_date),
+            ('expiry_date', '>=', datetime.now().date())
         ])

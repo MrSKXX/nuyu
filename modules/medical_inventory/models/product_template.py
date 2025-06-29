@@ -56,8 +56,8 @@ class ProductProduct(models.Model):
         }
         
         for quant in quants:
-            if quant.lot_id and hasattr(quant.lot_id, 'expiration_date') and quant.lot_id.expiration_date:
-                exp_date = quant.lot_id.expiration_date.date()
+            if quant.lot_id and quant.lot_id.expiry_date:
+                exp_date = quant.lot_id.expiry_date
                 days_to_expiry = (exp_date - today).days
                 
                 if days_to_expiry < 0:
