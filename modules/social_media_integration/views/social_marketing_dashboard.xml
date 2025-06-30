@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Simple Elena Dashboard - Just Basic Actions -->
+        <record id="action_elena_platforms" model="ir.actions.act_window">
+            <field name="name">Social Platforms</field>
+            <field name="res_model">social.platform</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <record id="action_elena_campaigns" model="ir.actions.act_window">
+            <field name="name">My Campaigns</field>
+            <field name="res_model">social.campaign</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <record id="action_elena_messages" model="ir.actions.act_window">
+            <field name="name">Messages</field>
+            <field name="res_model">social.message</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <record id="action_elena_customers" model="ir.actions.act_window">
+            <field name="name">Customer Segments</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_company', '=', False)]</field>
+        </record>
+        
+        <record id="action_birthday_customers" model="ir.actions.act_window">
+            <field name="name">Birthday Customers</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_company', '=', False), ('birthday', '!=', False)]</field>
+        </record>
+        
+    </data>
+</odoo>

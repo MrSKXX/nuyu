@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Simple Platform Form View -->
+        <record id="view_social_platform_form_test" model="ir.ui.view">
+            <field name="name">social.platform.form.test</field>
+            <field name="model">social.platform</field>
+            <field name="arch" type="xml">
+                <form string="Social Platform - Test">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="platform_type"/>
+                            <field name="is_active"/>
+                            <field name="api_token"/>
+                        </group>
+                        <group string="Capabilities">
+                            <field name="capabilities" widget="text"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Simple Platform Tree View -->
+        <record id="view_social_platform_tree_test" model="ir.ui.view">
+            <field name="name">social.platform.tree.test</field>
+            <field name="model">social.platform</field>
+            <field name="arch" type="xml">
+                <tree string="Social Platforms">
+                    <field name="name"/>
+                    <field name="platform_type"/>
+                    <field name="is_active"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Action to Open Platform List -->
+        <record id="action_social_platform_test" model="ir.actions.act_window">
+            <field name="name">Social Platforms - Test</field>
+            <field name="res_model">social.platform</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <!-- Simple Menu Item -->
+        <menuitem id="menu_social_platform_test"
+                  name="Social Platforms TEST"
+                  action="action_social_platform_test"
+                  parent="base.menu_administration"
+                  sequence="99"/>
+        
+    </data>
+</odoo>

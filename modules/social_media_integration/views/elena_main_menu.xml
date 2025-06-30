@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ELENA'S SOCIAL MEDIA MARKETING - Main Menu -->
+        <menuitem id="menu_elena_social_marketing"
+                  name="📱 Social Media Marketing"
+                  groups="base.group_user"
+                  sequence="15"/>
+        
+        <!-- Dashboard Menu -->
+        <menuitem id="menu_elena_dashboard"
+                  name="🏠 Dashboard"
+                  parent="menu_elena_social_marketing"
+                  action="action_elena_platforms"
+                  sequence="10"/>
+        
+        <!-- Quick Actions Menu -->
+        <menuitem id="menu_elena_quick_actions"
+                  name="⚡ Quick Actions"
+                  parent="menu_elena_social_marketing"
+                  sequence="20"/>
+        
+        <menuitem id="menu_elena_create_campaign"
+                  name="✨ Create Campaign"
+                  parent="menu_elena_quick_actions"
+                  action="action_elena_campaigns"
+                  sequence="10"/>
+        
+        <menuitem id="menu_elena_birthday_today"
+                  name="🎂 Birthday Customers"
+                  parent="menu_elena_quick_actions"
+                  action="action_birthday_customers"
+                  sequence="20"/>
+        
+        <!-- Campaigns Menu -->
+        <menuitem id="menu_elena_campaigns"
+                  name="📋 Campaigns"
+                  parent="menu_elena_social_marketing"
+                  sequence="30"/>
+        
+        <menuitem id="menu_elena_all_campaigns"
+                  name="All Campaigns"
+                  parent="menu_elena_campaigns"
+                  action="action_elena_campaigns"
+                  sequence="10"/>
+        
+        <!-- Messages Menu -->
+        <menuitem id="menu_elena_messages"
+                  name="💬 Messages"
+                  parent="menu_elena_social_marketing"
+                  sequence="40"/>
+        
+        <menuitem id="menu_elena_inbox"
+                  name="📥 Inbox"
+                  parent="menu_elena_messages"
+                  action="action_elena_messages"
+                  sequence="10"/>
+        
+        <!-- Customer Management -->
+        <menuitem id="menu_elena_customers"
+                  name="👥 Customers"
+                  parent="menu_elena_social_marketing"
+                  sequence="50"/>
+        
+        <menuitem id="menu_elena_customer_segments"
+                  name="Customer Segments"
+                  parent="menu_elena_customers"
+                  action="action_elena_customers"
+                  sequence="10"/>
+        
+        <!-- Configuration -->
+        <menuitem id="menu_elena_config"
+                  name="⚙️ Settings"
+                  parent="menu_elena_social_marketing"
+                  sequence="60"/>
+        
+        <menuitem id="menu_elena_platforms"
+                  name="Social Platforms"
+                  parent="menu_elena_config"
+                  action="action_elena_platforms"
+                  sequence="10"/>
+        
+    </data>
+</odoo>

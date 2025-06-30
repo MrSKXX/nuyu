@@ -1,13 +1,18 @@
 {
-    'name': 'NuYu Customer Enhancement',
-    'version': '16.0.1.0.0',
+    'name': 'NuYu Social Media Integration - TEST',
+    'version': '16.0.2.0.0',
     'category': 'Marketing',
-    'summary': 'Customer enhancement for NuYu',
+    'summary': 'Social media system for NuYu - Testing Phase',
     'depends': ['base', 'contacts', 'sale'],
     'data': [
+        'security/ir.model.access.csv',
         'views/customer_enhancement_views.xml',
+        'views/social_platform_views.xml',
+        'views/social_campaign_views.xml',
+        'views/social_marketing_dashboard.xml',
+        'views/elena_main_menu.xml',
     ],
     'installable': True,
     'auto_install': False,
-    'application': False,
+    'application': True,
 }
