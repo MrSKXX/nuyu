@@ -2,6 +2,12 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class ConsignmentInventory(models.Model):
+    """
+    Consignment Inventory Management
+    
+    Tracks products received on consignment from suppliers.
+    Manages the lifecycle from receipt to settlement with supplier.
+    """
     _name = 'medical.consignment'
     _description = 'Consignment Inventory Tracking'
     _order = 'date desc'
@@ -23,27 +29,47 @@ class ConsignmentInventory(models.Model):
     
     @api.model
     def create(self, vals):
+        """
+        Create consignment with auto-generated reference number.
+        Format: CONS0001, CONS0002, etc.
+        """
         if vals.get('name', _('New')) == _('New'):
             vals['name'] = self.env['ir.sequence'].next_by_code('medical.consignment') or _('New')
         return super().create(vals)
     
     @api.depends('line_ids.total_value')
     def _compute_total_value(self):
+        """
+        Calculate total consignment value from all product lines.
+        """
         for record in self:
             record.total_value = sum(line.total_value for line in record.line_ids)
     
     def action_activate(self):
+        """
+        Activate consignment and mark stock as consignment inventory.
+        Updates stock quants to track consignment status.
+        """
         self.state = 'active'
         for line in self.line_ids:
             line._update_stock_quant()
     
     def action_settle(self):
+        """
+        Settle consignment by processing used quantities.
+        Creates stock movements for products that have been consumed.
+        """
         for line in self.line_ids:
             if line.quantity_used > 0:
                 line._create_settlement_move()
         self.state = 'settled'
 
 class ConsignmentLine(models.Model):
+    """
+    Consignment Product Lines
+    
+    Individual product lines within a consignment with usage tracking.
+    """
     _name = 'medical.consignment.line'
     _description = 'Consignment Inventory Line'
     
@@ -59,15 +85,25 @@ class ConsignmentLine(models.Model):
     
     @api.depends('quantity_received', 'quantity_used')
     def _compute_remaining(self):
+        """
+        Calculate remaining quantity from received minus used.
+        """
         for line in self:
             line.quantity_remaining = line.quantity_received - line.quantity_used
     
     @api.depends('quantity_received', 'unit_cost')
     def _compute_total(self):
+        """
+        Calculate total line value (quantity * unit cost).
+        """
         for line in self:
             line.total_value = line.quantity_received * line.unit_cost
     
     def _update_stock_quant(self):
+        """
+        Mark stock quant as consignment inventory.
+        Links stock quantity to this consignment line for tracking.
+        """
         quant = self.env['stock.quant'].search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.consignment_id.location_id.id),
@@ -79,6 +115,10 @@ class ConsignmentLine(models.Model):
             quant.consignment_line_id = self.id
         
     def _create_settlement_move(self):
+        """
+        Create stock movement for consignment settlement.
+        Moves used quantities from consignment to customer location.
+        """
         move_vals = {
             'name': f'Consignment Settlement: {self.product_id.name}',
             'product_id': self.product_id.id,

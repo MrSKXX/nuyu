@@ -2,6 +2,12 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class RoomTransfer(models.Model):
+    """
+    Room to Room Transfer Management
+    
+    Manages the transfer of medical products between different locations
+    within the NuYu Medical Spa (warehouse, treatment rooms, etc.)
+    """
     _name = 'medical.room.transfer'
     _description = 'Room to Room Transfer'
     _order = 'date desc'
@@ -26,32 +32,54 @@ class RoomTransfer(models.Model):
     
     @api.model
     def create(self, vals):
+        """
+        Create room transfer with auto-generated reference number.
+        Format: RT0001, RT0002, etc.
+        """
         if vals.get('name', _('New')) == _('New'):
             vals['name'] = self.env['ir.sequence'].next_by_code('medical.room.transfer') or _('New')
         return super().create(vals)
     
     @api.constrains('source_location_id', 'dest_location_id')
     def _check_locations(self):
+        """
+        Validate that source and destination locations are different.
+        """
         for record in self:
             if record.source_location_id == record.dest_location_id:
                 raise ValidationError(_('Source and destination locations cannot be the same.'))
     
     def action_confirm(self):
+        """
+        Confirm the room transfer and create stock picking.
+        Changes state from draft to confirmed and generates internal transfer.
+        """
         self._create_stock_picking()
         self.state = 'confirmed'
     
     def action_done(self):
+        """
+        Complete the room transfer by processing the stock picking.
+        Moves products between locations and marks transfer as done.
+        """
         if self.stock_picking_id:
             self.stock_picking_id.action_confirm()
             self.stock_picking_id.action_done()
         self.state = 'done'
         
     def action_cancel(self):
+        """
+        Cancel the room transfer and associated stock movements.
+        """
         if self.stock_picking_id and self.stock_picking_id.state not in ['done', 'cancel']:
             self.stock_picking_id.action_cancel()
         self.state = 'cancelled'
     
     def _create_stock_picking(self):
+        """
+        Create internal stock picking for the room transfer.
+        Generates stock moves for each product line in the transfer.
+        """
         picking_type = self.env['stock.picking.type'].search([
             ('code', '=', 'internal'),
             ('warehouse_id.company_id', '=', self.env.company.id)
@@ -76,6 +104,11 @@ class RoomTransfer(models.Model):
         self.stock_picking_id = picking.id
 
 class RoomTransferLine(models.Model):
+    """
+    Room Transfer Line Items
+    
+    Individual product lines for room transfers with quantity validation.
+    """
     _name = 'medical.room.transfer.line'
     _description = 'Room Transfer Line'
     
@@ -87,6 +120,10 @@ class RoomTransferLine(models.Model):
     
     @api.depends('product_id', 'lot_id', 'transfer_id.source_location_id')
     def _compute_available(self):
+        """
+        Calculate available quantity for the product at source location.
+        Considers lot/batch if specified.
+        """
         for line in self:
             if line.product_id and line.transfer_id.source_location_id:
                 domain = [
@@ -103,6 +140,10 @@ class RoomTransferLine(models.Model):
     
     @api.onchange('quantity', 'quantity_available')
     def _check_quantity(self):
+        """
+        Validate that requested quantity doesn't exceed available stock.
+        Shows warning if insufficient stock is detected.
+        """
         if self.quantity > self.quantity_available:
             return {
                 'warning': {

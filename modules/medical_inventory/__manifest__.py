@@ -4,7 +4,7 @@
     'category': 'Inventory/Inventory',
     'summary': 'Medical spa inventory with expiry tracking, consignment, and room transfers',
     'description': '''
-    Complete medical spa inventory management system featuring:
+    Medical spa inventory management system featuring:
     - Multi-location inventory (Main Warehouse → Treatment Rooms)
     - Room-to-room transfer workflows
     - Consignment inventory tracking with supplier management
@@ -14,8 +14,8 @@
     - Lebanese currency support (LBP)
     - Professional medical spa workflows
     ''',
-    'author': 'Georges Skaf - Symufolk/Home Logic',
-    'website': 'https://github.com/MrSKXX/nuyu-odoo-customizations',
+    'author': 'Symufolk/Home Logic',
+    'website': 'https://github.com/MrSKXX/nuyu.git',
     'depends': [
         'base',
         'stock',
