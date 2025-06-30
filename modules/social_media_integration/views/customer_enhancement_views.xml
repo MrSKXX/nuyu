@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Enhanced Partner Form View -->
+        <record id="res_partner_form_social_marketing" model="ir.ui.view">
+            <field name="name">res.partner.form.social.marketing</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                
+                <!-- Add Social Marketing Tab -->
+                <notebook position="inside">
+                    <page string="Social Marketing" attrs="{'invisible': [('is_company', '=', True)]}">
+                        <group>
+                            <group string="Customer Segmentation">
+                                <field name="spending_tier" readonly="1"/>
+                                <field name="total_spent" readonly="1"/>
+                                <field name="preferred_contact_method"/>
+                            </group>
+                            <group string="Birthday Campaigns">
+                                <field name="birthday_campaign_sent"/>
+                                <field name="last_birthday_campaign"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Social Media Notes">
+                            <field name="social_media_notes" widget="text"/>
+                        </group>
+                    </page>
+                </notebook>
+                
+            </field>
+        </record>
+        
+    </data>
+</odoo>

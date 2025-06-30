@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Default Social Media Platforms -->
+        <record id="platform_instagram" model="social.platform">
+            <field name="name">NuYu Instagram</field>
+            <field name="platform_type">instagram</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">DM, comments, post/story/reel scheduling + posting</field>
+        </record>
+        
+        <record id="platform_facebook" model="social.platform">
+            <field name="name">NuYu Facebook</field>
+            <field name="platform_type">facebook</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">DM, comments, post/story/reel scheduling + posting</field>
+        </record>
+        
+        <record id="platform_whatsapp" model="social.platform">
+            <field name="name">NuYu WhatsApp Business</field>
+            <field name="platform_type">whatsapp</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">Messages, statuses, call-responding, broadcast channel content</field>
+        </record>
+        
+        <record id="platform_youtube" model="social.platform">
+            <field name="name">NuYu YouTube</field>
+            <field name="platform_type">youtube</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">Comments, channel management</field>
+        </record>
+        
+        <record id="platform_snapchat" model="social.platform">
+            <field name="name">NuYu Snapchat</field>
+            <field name="platform_type">snapchat</field>
+            <field name="is_active">False</field>
+            <field name="capabilities">Reels/stories posting setup</field>
+        </record>
+        
+        <record id="platform_botim" model="social.platform">
+            <field name="name">NuYu Botim</field>
+            <field name="platform_type">botim</field>
+            <field name="is_active">False</field>
+            <field name="capabilities">DM/Call-responding setup</field>
+        </record>
+        
+        <record id="platform_email" model="social.platform">
+            <field name="name">NuYu Email Marketing</field>
+            <field name="platform_type">email</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">Scheduling + sending emails, Contact list management</field>
+        </record>
+        
+        <record id="platform_google_reviews" model="social.platform">
+            <field name="name">Google Reviews</field>
+            <field name="platform_type">google_reviews</field>
+            <field name="is_active">True</field>
+            <field name="capabilities">Feedback + Reviews setup</field>
+        </record>
+        
+        <!-- Default Birthday Automation -->
+        <record id="default_birthday_automation" model="social.birthday.automation">
+            <field name="name">NuYu Daily Birthday Campaigns</field>
+            <field name="is_active">True</field>
+        </record>
+        
+        <!-- WhatsApp Connector -->
+        <record id="default_whatsapp_connector" model="social.whatsapp.connector">
+            <field name="platform_id" ref="platform_whatsapp"/>
+        </record>
+        
+    </data>
+</odoo>
