@@ -20,11 +20,15 @@ class SocialCampaign(models.Model):
         ('sent', 'Sent')
     ], string='Status', default='draft')
     
-    # Simple target segment (no complex calculations yet)
+    # Simple target segment (add custom option)
     target_segment = fields.Selection([
         ('all', 'All Customers'),
-        ('vip', 'VIP Customers Only')
+        ('vip', 'VIP Customers Only'),
+        ('custom', 'Custom Selection')
     ], string='Target Segment', default='all')
+    
+    # Target customers for custom selection
+    target_customer_ids = fields.Many2many('res.partner', string='Target Customers')
     
     # Link to platform (Many2one relationship)
     primary_platform = fields.Many2one('social.platform', string='Primary Platform')
@@ -55,14 +59,24 @@ class SocialCampaign(models.Model):
                 }
             }
         
-        # Get a few test customers (or create dummy ones)
-        customers = self.env['res.partner'].search([('is_company', '=', False)], limit=3)
+        # Get customers based on target segment
+        if self.target_segment == 'all':
+            customers = self.env['res.partner'].search([('is_company', '=', False)], limit=3)
+        elif self.target_segment == 'vip':
+            customers = self.env['res.partner'].search([
+                ('is_company', '=', False),
+                ('spending_tier', '=', 'vip')
+            ], limit=3)
+        elif self.target_segment == 'custom' and self.target_customer_ids:
+            customers = self.target_customer_ids
+        else:
+            customers = self.env['res.partner'].search([('is_company', '=', False)], limit=3)
         
         if not customers:
             # Create a test customer if none exist
             test_customer = self.env['res.partner'].create({
-                'name': 'Test Customer',
-                'email': 'test@example.com',
+                'name': 'Demo Customer',
+                'email': 'demo@nuyu.com',
                 'is_company': False
             })
             customers = test_customer
@@ -87,7 +101,7 @@ class SocialCampaign(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': 'Campaign Sent!',
-                'message': f'Test campaign sent to {len(customers)} customers',
+                'message': f'Campaign sent to {len(customers)} customers',
                 'type': 'success'
             }
         }

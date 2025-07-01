@@ -5,3 +5,5 @@ access_social_campaign_user,social.campaign.user,model_social_campaign,base.grou
 access_social_campaign_manager,social.campaign.manager,model_social_campaign,base.group_system,1,1,1,1
 access_social_message_user,social.message.user,model_social_message,base.group_user,1,1,1,0
 access_social_message_manager,social.message.manager,model_social_message,base.group_system,1,1,1,1
+access_social_birthday_automation_user,social.birthday.automation.user,model_social_birthday_automation,base.group_user,1,1,1,0
+access_social_birthday_automation_manager,social.birthday.automation.manager,model_social_birthday_automation,base.group_system,1,1,1,1

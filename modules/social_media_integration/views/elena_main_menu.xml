@@ -45,6 +45,12 @@
                   action="action_elena_campaigns"
                   sequence="10"/>
         
+        <menuitem id="menu_elena_birthday_automation"
+                  name="🎂 Birthday Automation"
+                  parent="menu_elena_campaigns"
+                  action="action_birthday_automation"
+                  sequence="20"/>
+        
         <!-- Messages Menu -->
         <menuitem id="menu_elena_messages"
                   name="💬 Messages"
