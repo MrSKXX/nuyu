@@ -1,10 +1,11 @@
+# modules/appointment_system/models/appointment.py
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
 
 class Appointment(models.Model):
     """
-    Appointment Management
+    Appointment Management - Back to Working Version
     """
     _name = 'appointment.appointment'
     _description = 'Medical Appointment'
