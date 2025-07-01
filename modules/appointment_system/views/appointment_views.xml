@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Appointment Form View -->
+        <record id="view_appointment_form" model="ir.ui.view">
+            <field name="name">appointment.appointment.form</field>
+            <field name="model">appointment.appointment</field>
+            <field name="arch" type="xml">
+                <form string="Appointment">
+                    <header>
+                        <button name="action_confirm" type="object" string="Confirm" 
+                                states="draft" class="btn-primary"/>
+                        <button name="action_done" type="object" string="Done" 
+                                states="confirmed" class="btn-success"/>
+                        <button name="action_cancel" type="object" string="Cancel" 
+                                states="draft,confirmed"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="appointment_date"/>
+                                <field name="duration"/>
+                                <field name="treatment_type"/>
+                            </group>
+                            <group>
+                                <field name="patient_id"/>
+                                <field name="practitioner_id"/>
+                                <field name="room"/>
+                                <field name="price"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Appointment Tree View -->
+        <record id="view_appointment_tree" model="ir.ui.view">
+            <field name="name">appointment.appointment.tree</field>
+            <field name="model">appointment.appointment</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state=='draft'" decoration-success="state=='confirmed'">
+                    <field name="name"/>
+                    <field name="appointment_date"/>
+                    <field name="patient_id"/>
+                    <field name="practitioner_id"/>
+                    <field name="treatment_type"/>
+                    <field name="room"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Appointment Search View -->
+        <record id="view_appointment_search" model="ir.ui.view">
+            <field name="name">appointment.appointment.search</field>
+            <field name="model">appointment.appointment</field>
+            <field name="arch" type="xml">
+                <search string="Search Appointments">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="practitioner_id"/>
+                    <separator/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Practitioner" name="group_practitioner" context="{'group_by': 'practitioner_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

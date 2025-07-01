@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Actions -->
+        <record id="action_appointment" model="ir.actions.act_window">
+            <field name="name">Appointments</field>
+            <field name="res_model">appointment.appointment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first appointment
+                </p>
+                <p>
+                    Schedule patient appointments with doctors.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Main Menu -->
+        <menuitem id="menu_appointment_root"
+                  name="Appointments"
+                  groups="base.group_user"
+                  sequence="20"/>
+        
+        <!-- Operations Menu -->
+        <menuitem id="menu_appointment_operations"
+                  name="Operations"
+                  parent="menu_appointment_root"
+                  sequence="10"/>
+        
+        <menuitem id="menu_appointments"
+                  name="Appointments"
+                  parent="menu_appointment_operations"
+                  action="action_appointment"
+                  sequence="10"/>
+        
+    </data>
+</odoo>
