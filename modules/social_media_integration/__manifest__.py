@@ -11,6 +11,7 @@
         'views/social_campaign_views.xml',
         'views/social_marketing_dashboard.xml',
         'views/birthday_automation_views.xml',
+        'views/whatsapp_connector_views.xml',
         'views/elena_main_menu.xml',
     ],
     'installable': True,

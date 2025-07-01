@@ -87,5 +87,11 @@
                   action="action_elena_platforms"
                   sequence="10"/>
         
+        <menuitem id="menu_elena_whatsapp"
+                  name="📱 WhatsApp Business API"
+                  parent="menu_elena_config"
+                  action="action_whatsapp_connector"
+                  sequence="20"/>
+        
     </data>
 </odoo>

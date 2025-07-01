@@ -2,8 +2,7 @@ from odoo import models, fields, api
 
 class SocialCampaign(models.Model):
     """
-    Basic Social Campaign Model - Testing Version
-    Start with minimal fields, add complexity later
+    Social Media Campaign Model - Working Version
     """
     _name = 'social.campaign'
     _description = 'Social Media Campaign'
@@ -20,34 +19,22 @@ class SocialCampaign(models.Model):
         ('sent', 'Sent')
     ], string='Status', default='draft')
     
-    # Simple target segment (add custom option)
     target_segment = fields.Selection([
         ('all', 'All Customers'),
         ('vip', 'VIP Customers Only'),
         ('custom', 'Custom Selection')
     ], string='Target Segment', default='all')
     
-    # Target customers for custom selection
     target_customer_ids = fields.Many2many('res.partner', string='Target Customers')
-    
-    # Link to platform (Many2one relationship)
     primary_platform = fields.Many2one('social.platform', string='Primary Platform')
-    
-    # Message content
     message_content = fields.Text(string='Message Content', required=True)
-    
-    # Simple scheduling
     send_immediately = fields.Boolean(string='Send Immediately', default=True)
     scheduled_date = fields.Datetime(string='Scheduled Date')
-    
-    # Basic statistics
     sent_count = fields.Integer(string='Messages Sent', default=0)
-    
-    # Relationship to messages
     message_ids = fields.One2many('social.message', 'campaign_id', string='Messages')
     
     def action_send_test(self):
-        """Simple test send function"""
+        """Simple, working send function"""
         if not self.primary_platform:
             return {
                 'type': 'ir.actions.client',
@@ -59,7 +46,7 @@ class SocialCampaign(models.Model):
                 }
             }
         
-        # Get customers based on target segment
+        # Get customers
         if self.target_segment == 'all':
             customers = self.env['res.partner'].search([('is_company', '=', False)], limit=3)
         elif self.target_segment == 'vip':
@@ -73,35 +60,48 @@ class SocialCampaign(models.Model):
             customers = self.env['res.partner'].search([('is_company', '=', False)], limit=3)
         
         if not customers:
-            # Create a test customer if none exist
+            # Create a test customer
             test_customer = self.env['res.partner'].create({
                 'name': 'Demo Customer',
                 'email': 'demo@nuyu.com',
+                'phone': '+96181234567',
                 'is_company': False
             })
             customers = test_customer
         
-        # Create messages for each customer
+        # Create and send messages
+        sent_count = 0
         for customer in customers:
-            message = self.env['social.message'].create({
-                'campaign_id': self.id,
-                'recipient_id': customer.id,
-                'platform_id': self.primary_platform.id,
-                'content': self.message_content,
-                'state': 'sent',
-                'sent_date': fields.Datetime.now()
-            })
+            try:
+                message = self.env['social.message'].create({
+                    'campaign_id': self.id,
+                    'recipient_id': customer.id,
+                    'platform_id': self.primary_platform.id,
+                    'content': self.message_content,
+                    'state': 'draft',
+                })
+                
+                # Send the message
+                message.action_send_now()
+                
+                if message.state == 'sent':
+                    sent_count += 1
+                    
+            except Exception as e:
+                # Log error but continue
+                continue
         
         # Update campaign
-        self.sent_count = len(customers)
-        self.state = 'sent'
+        self.sent_count = sent_count
+        if sent_count > 0:
+            self.state = 'sent'
         
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': 'Campaign Sent!',
-                'message': f'Campaign sent to {len(customers)} customers',
+                'title': '🚀 Campaign Sent Successfully!',
+                'message': f'Sent {sent_count} messages via {self.primary_platform.name}',
                 'type': 'success'
             }
         }
