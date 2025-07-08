@@ -1,0 +1,269 @@
+/* Calendar Appointment Form Styling */
+
+.appointment_booking_form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.appointment_booking_form .o_form_label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.appointment_booking_form .o_form_label_checkbox {
+    font-size: 13px;
+    color: #6c757d;
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.appointment_booking_form .o_field_widget {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    background-color: white;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.appointment_booking_form .o_field_widget:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.appointment_booking_form .o_field_widget[placeholder] {
+    color: #6c757d;
+}
+
+/* Date/Time field styling */
+.appointment_booking_form .o_field_widget.o_datepicker_input {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23666" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 4v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V4H2z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+}
+
+/* Selection field styling */
+.appointment_booking_form .o_field_widget.o_field_selection select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 13px;
+}
+
+/* Textarea styling */
+.appointment_booking_form .o_field_widget.o_field_text textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    resize: vertical;
+}
+
+/* Checkbox styling */
+.appointment_booking_form .o_field_boolean {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    accent-color: #007bff;
+}
+
+/* Radio button styling for notifications */
+.appointment_booking_form .o_field_radio .o_radio_item {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.appointment_booking_form .o_field_radio input[type="radio"] {
+    margin-right: 8px;
+    accent-color: #007bff;
+}
+
+.appointment_booking_form .o_field_radio label {
+    font-size: 13px;
+    color: #495057;
+    cursor: pointer;
+}
+
+/* Save button styling */
+.save_appointment_btn {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 30px;
+    border-radius: 4px;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.save_appointment_btn:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+/* Row spacing */
+.appointment_booking_form .row {
+    margin-bottom: 15px;
+}
+
+.appointment_booking_form .row:last-child {
+    margin-bottom: 0;
+}
+
+/* Required field asterisk */
+.appointment_booking_form .o_form_label .text-danger {
+    color: #dc3545;
+    margin-left: 2px;
+}
+
+/* Notifications section styling */
+.appointment_booking_form hr {
+    border-top: 1px solid #dee2e6;
+    margin: 15px 0 10px 0;
+}
+
+.appointment_booking_form h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+/* Form check styling for notifications */
+.appointment_booking_form .form-check {
+    margin-bottom: 8px;
+}
+
+.appointment_booking_form .form-check-input {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    accent-color: #007bff;
+}
+
+.appointment_booking_form .form-check-label {
+    font-size: 13px;
+    color: #495057;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .appointment_booking_form .col-4,
+    .appointment_booking_form .col-6 {
+        margin-bottom: 15px;
+    }
+    
+    .appointment_booking_form {
+        padding: 15px;
+    }
+}
+
+/* Calendar popup specific styling */
+.o_form_view_calendar_popup .appointment_booking_form {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 25px;
+}
+
+/* Plus icon styling */
+.appointment_booking_form .fa-plus-circle {
+    font-size: 12px;
+    margin-left: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.appointment_booking_form .fa-plus-circle:hover {
+    opacity: 1;
+    color: #007bff !important;
+}
+
+/* Selection field dropdown arrow */
+.appointment_booking_form .o_field_widget select {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 30px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Input focus states */
+.appointment_booking_form .o_field_widget:focus,
+.appointment_booking_form .o_field_widget select:focus,
+.appointment_booking_form .o_field_widget textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Placeholder styling */
+.appointment_booking_form .o_field_widget::placeholder,
+.appointment_booking_form .o_field_widget textarea::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+}
+
+/* Many2one field styling */
+.appointment_booking_form .o_field_many2one .o_input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* Boolean field container */
+.appointment_booking_form .form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+/* Calendar form title */
+.appointment_booking_form .form-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Error state styling */
+.appointment_booking_form .o_field_widget.o_field_invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Success state styling */
+.appointment_booking_form .o_field_widget.o_field_valid {
+    border-color: #28a745;
+}
+
+/* Loading state */
+.appointment_booking_form .o_field_widget:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+    cursor: not-allowed;
+}
