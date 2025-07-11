@@ -1,15 +1,17 @@
-# Simple working Dockerfile for Render.com
+# Ultra simple Dockerfile - let Odoo auto-detect environment
 FROM odoo:16.0
 
 # Copy custom modules
 COPY modules /mnt/extra-addons
 
-# Create a startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Set environment variables that Odoo will automatically use
+ENV HOST=$POSTGRES_HOST
+ENV PORT=$POSTGRES_PORT  
+ENV USER=$POSTGRES_USER
+ENV PASSWORD=$POSTGRES_PASSWORD
 
 # Expose port
 EXPOSE 8069
 
-# Use startup script
-CMD ["/start.sh"]
+# Start Odoo (it will use the environment variables automatically)
+CMD ["odoo"]
