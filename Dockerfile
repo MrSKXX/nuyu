@@ -1,3 +1,6 @@
+# Simple working Dockerfile for Render.com
+FROM odoo:16.0
+
 # Copy custom modules
 COPY modules /mnt/extra-addons
 
