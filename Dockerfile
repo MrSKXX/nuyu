@@ -1,11 +1,15 @@
-# Final working Dockerfile for Render.com deployment
+# Simple working Dockerfile for Render.com
 FROM odoo:16.0
 
 # Copy custom modules
 COPY modules /mnt/extra-addons
 
+# Create a startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 # Expose port
 EXPOSE 8069
 
-# Start Odoo with environment variables (no default db host)
-CMD ["odoo", "--db_host=${POSTGRES_HOST}", "--db_port=${POSTGRES_PORT}", "--db_user=${POSTGRES_USER}", "--db_password=${POSTGRES_PASSWORD}", "--database=${POSTGRES_DB}"]
+# Use startup script
+CMD ["/start.sh"]
