@@ -1,16 +1,11 @@
-# Dockerfile for Render.com deployment
+# Dockerfile for Render.com deployment with PostgreSQL
 FROM odoo:16.0
 
 # Copy custom modules
 COPY modules /mnt/extra-addons
 
-# Set environment variables
-ENV HOST=db
-ENV USER=odoo
-ENV PASSWORD=odoo
-
 # Expose port
 EXPOSE 8069
 
-# Start Odoo
-CMD ["odoo"]
+# Start Odoo with environment variables
+CMD ["odoo", "--database=nuyu_production"]
