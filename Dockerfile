@@ -1,24 +1,23 @@
-# Permanent solution Dockerfile for Render.com
+# Simple working Dockerfile for Render.com
 FROM odoo:16.0
 
 # Copy custom modules
 COPY modules /mnt/extra-addons
 
-# Create entrypoint script that uses environment variables
-RUN echo '#!/bin/bash' > /entrypoint.sh && \
-    echo 'set -e' >> /entrypoint.sh && \
-    echo 'echo "Starting Odoo with database: $DB_HOST"' >> /entrypoint.sh && \
-    echo 'exec odoo \' >> /entrypoint.sh && \
-    echo '  --db_host="$DB_HOST" \' >> /entrypoint.sh && \
-    echo '  --db_port="$DB_PORT" \' >> /entrypoint.sh && \
-    echo '  --db_user="$DB_USER" \' >> /entrypoint.sh && \
-    echo '  --db_password="$DB_PASSWORD" \' >> /entrypoint.sh && \
-    echo '  --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \' >> /entrypoint.sh && \
-    echo '  "$@"' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
+# Create the entrypoint script in a writable location
+USER root
+RUN mkdir -p /usr/local/bin && \
+    echo '#!/bin/bash' > /usr/local/bin/start-odoo.sh && \
+    echo 'set -e' >> /usr/local/bin/start-odoo.sh && \
+    echo 'echo "Starting Odoo with database: $DB_HOST"' >> /usr/local/bin/start-odoo.sh && \
+    echo 'exec odoo --db_host="$DB_HOST" --db_port="$DB_PORT" --db_user="$DB_USER" --db_password="$DB_PASSWORD" --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons "$@"' >> /usr/local/bin/start-odoo.sh && \
+    chmod +x /usr/local/bin/start-odoo.sh
+
+# Switch back to odoo user
+USER odoo
 
 # Expose port
 EXPOSE 8069
 
-# Use the entrypoint script
-ENTRYPOINT ["/entrypoint.sh"]
+# Use the startup script
+CMD ["/usr/local/bin/start-odoo.sh"]
