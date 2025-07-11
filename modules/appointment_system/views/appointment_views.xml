@@ -2,7 +2,7 @@
 <odoo>
     <data>
         
-        <!-- FINAL POLISHED PDF-IDENTICAL FORM -->
+        <!-- EXISTING POPUP FORM - Keep as is -->
         <record id="view_appointment_form_popup_compact" model="ir.ui.view">
             <field name="name">appointment.appointment.form.popup.compact</field>
             <field name="model">appointment.appointment</field>
@@ -263,6 +263,97 @@
             </field>
         </record>
         
+        <!-- DOCTOR-SPECIFIC CALENDAR VIEW -->
+        <record id="view_appointment_calendar_doctor" model="ir.ui.view">
+            <field name="name">appointment.appointment.calendar.doctor</field>
+            <field name="model">appointment.appointment</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <calendar string="My Schedule" 
+                         date_start="appointment_date"
+                         date_stop="appointment_end_date"
+                         color="treatment_type"
+                         mode="week"
+                         quick_add="True"
+                         all_day="all_day"
+                         scales="day,week"
+                         form_view_id="view_appointment_form_popup_compact"
+                         event_limit="10">
+                    
+                    <field name="patient_id"/>
+                    <field name="treatment_type"/>
+                    <field name="room"/>
+                    <field name="state"/>
+                    <field name="duration_selection"/>
+                    <field name="practitioner_id"/>
+                    <field name="display_name_calendar"/>
+                    <field name="all_day" invisible="1"/>
+                    
+                </calendar>
+            </field>
+        </record>
+        
+        <!-- CLINIC-WIDE CALENDAR VIEW -->
+        <record id="view_appointment_calendar_clinic" model="ir.ui.view">
+            <field name="name">appointment.appointment.calendar.clinic</field>
+            <field name="model">appointment.appointment</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <calendar string="Clinic Calendar" 
+                         date_start="appointment_date"
+                         date_stop="appointment_end_date"
+                         color="practitioner_id"
+                         mode="week"
+                         quick_add="True"
+                         all_day="all_day"
+                         scales="day,week,month"
+                         form_view_id="view_appointment_form_popup_compact"
+                         event_limit="15">
+                    
+                    <field name="patient_id"/>
+                    <field name="treatment_type"/>
+                    <field name="room"/>
+                    <field name="state"/>
+                    <field name="duration_selection"/>
+                    <field name="practitioner_id"/>
+                    <field name="department"/>
+                    <field name="display_name_calendar"/>
+                    <field name="all_day" invisible="1"/>
+                    
+                </calendar>
+            </field>
+        </record>
+        
+        <!-- ROOM-FOCUSED CALENDAR VIEW -->
+        <record id="view_appointment_calendar_rooms" model="ir.ui.view">
+            <field name="name">appointment.appointment.calendar.rooms</field>
+            <field name="model">appointment.appointment</field>
+            <field name="priority">15</field>
+            <field name="arch" type="xml">
+                <calendar string="Room Schedule" 
+                         date_start="appointment_date"
+                         date_stop="appointment_end_date"
+                         color="room"
+                         mode="week"
+                         quick_add="True"
+                         all_day="all_day"
+                         scales="day,week"
+                         form_view_id="view_appointment_form_popup_compact"
+                         event_limit="8">
+                    
+                    <field name="patient_id"/>
+                    <field name="treatment_type"/>
+                    <field name="room"/>
+                    <field name="state"/>
+                    <field name="machine"/>
+                    <field name="practitioner_id"/>
+                    <field name="display_name_calendar"/>
+                    <field name="all_day" invisible="1"/>
+                    
+                </calendar>
+            </field>
+        </record>
+        
         <!-- REGULAR APPOINTMENT FORM VIEW (Keep existing) -->
         <record id="view_appointment_form" model="ir.ui.view">
             <field name="name">appointment.appointment.form</field>
@@ -393,7 +484,7 @@
             </field>
         </record>
         
-        <!-- APPOINTMENT CALENDAR VIEW -->
+        <!-- ORIGINAL CALENDAR VIEW (Keep for backwards compatibility) -->
         <record id="view_appointment_calendar" model="ir.ui.view">
             <field name="name">appointment.appointment.calendar</field>
             <field name="model">appointment.appointment</field>
@@ -421,7 +512,7 @@
             </field>
         </record>
         
-        <!-- APPOINTMENT SEARCH VIEW -->
+        <!-- ENHANCED APPOINTMENT SEARCH VIEW -->
         <record id="view_appointment_search" model="ir.ui.view">
             <field name="name">appointment.appointment.search</field>
             <field name="model">appointment.appointment</field>
@@ -441,10 +532,37 @@
                             domain="[('appointment_date', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
                                     ('appointment_date', '&lt;', (context_today() + datetime.timedelta(days=7-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
                     
+                    <!-- Doctor-specific filters -->
+                    <separator/>
+                    <filter string="My Appointments" name="my_appointments" 
+                            domain="[('practitioner_id', '=', uid)]"/>
+                    <filter string="My Today" name="my_today" 
+                            domain="[('practitioner_id', '=', uid), 
+                                    ('appointment_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), 
+                                    ('appointment_date', '&lt;', datetime.datetime.combine(context_today() + datetime.timedelta(days=1), datetime.time(0,0,0)))]"/>
+                    
                     <!-- Status Filters -->
                     <separator/>
                     <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
                     <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="🔴 Overdue" name="overdue" 
+                            domain="[('appointment_date', '&lt;', datetime.datetime.now()), ('state', '=', 'confirmed')]"/>
+                    <filter string="🆕 New Patients" name="new_patients" domain="[('new_patient', '=', True)]"/>
+                    <filter string="💰 High Value" name="high_value" domain="[('price', '&gt;=', 500)]"/>
+                    
+                    <!-- Department filters -->
+                    <separator/>
+                    <filter string="📍 Verdun" name="verdun" domain="[('department', '=', 'verdun')]"/>
+                    <filter string="📍 Achrafieh" name="achrafieh" domain="[('department', '=', 'achrafieh')]"/>
+                    <filter string="📍 Beirut Central" name="beirut_central" domain="[('department', '=', 'beirut_central')]"/>
+                    <filter string="📍 Dbayeh" name="dbayeh" domain="[('department', '=', 'dbayeh')]"/>
+                    
+                    <!-- Room availability filters -->
+                    <separator/>
+                    <filter string="Room 1" name="room1" domain="[('room', '=', 'room_1')]"/>
+                    <filter string="Room 2" name="room2" domain="[('room', '=', 'room_2')]"/>
+                    <filter string="Laser Room" name="laser_room" domain="[('room', '=', 'laser_room')]"/>
+                    <filter string="VIP Room" name="vip_room" domain="[('room', '=', 'vip_room')]"/>
                     
                     <!-- Doctor Quick Filters -->
                     <separator/>
@@ -463,6 +581,7 @@
                         <filter string="📅 Date" name="group_date" context="{'group_by': 'appointment_date:day'}"/>
                         <filter string="🏥 Treatment" name="group_treatment" context="{'group_by': 'treatment_type'}"/>
                         <filter string="📍 Room" name="group_room" context="{'group_by': 'room'}"/>
+                        <filter string="🏢 Department" name="group_department" context="{'group_by': 'department'}"/>
                         <filter string="📊 Status" name="group_state" context="{'group_by': 'state'}"/>
                     </group>
                 </search>
