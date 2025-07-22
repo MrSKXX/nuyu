@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Add discount fields to POS Order Line form view -->
+        <record id="view_pos_order_line_form_discount" model="ir.ui.view">
+            <field name="name">pos.order.line.form.discount</field>
+            <field name="model">pos.order.line</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_line"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='discount']" position="after">
+                    <group string="Discount Information" attrs="{'invisible': [('discount', '=', 0)]}">
+                        <field name="discount_reason"/>
+                        <field name="discount_requested_by"/>
+                        <field name="discount_approved_by"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add discount fields to POS Order form view -->
+        <record id="view_pos_order_form_discount" model="ir.ui.view">
+            <field name="name">pos.order.form.discount</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lines']/tree/field[@name='discount']" position="after">
+                    <field name="discount_reason"/>
+                    <field name="discount_requested_by"/>
+                    <field name="discount_approved_by"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add discount fields to POS Order tree view -->
+        <record id="view_pos_order_tree_discount" model="ir.ui.view">
+            <field name="name">pos.order.tree.discount</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='config_id']" position="after">
+                    <field name="lines.discount_reason" string="Discount Reasons" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
