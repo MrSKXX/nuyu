@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Discount Report Tree View -->
+        <record id="view_pos_discount_report_tree" model="ir.ui.view">
+            <field name="name">POS Discount Report</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="Discount Reports" create="false" edit="false">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="qty"/>
+                    <field name="price_unit"/>
+                    <field name="discount"/>
+                    <field name="discount_reason"/>
+                    <field name="discount_requested_by"/>
+                    <field name="discount_approved_by"/>
+                    <field name="discount_requested_by_id"/>
+                    <field name="discount_approved_by_id"/>
+                    <field name="discount_timestamp"/>
+                    <field name="price_subtotal_incl" sum="Total"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Discount Report Form View -->
+        <record id="view_pos_discount_report_form" model="ir.ui.view">
+            <field name="name">POS Discount Report Form</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <form string="Discount Details" create="false" edit="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="order_id"/>
+                                <field name="product_id"/>
+                                <field name="qty"/>
+                                <field name="price_unit"/>
+                                <field name="discount"/>
+                                <field name="price_subtotal_incl"/>
+                            </group>
+                            <group>
+                                <field name="discount_reason"/>
+                                <field name="discount_requested_by"/>
+                                <field name="discount_approved_by"/>
+                                <field name="discount_requested_by_id"/>
+                                <field name="discount_approved_by_id"/>
+                                <field name="discount_timestamp"/>
+                            </group>
+                        </group>
+                        <group string="Discount Information">
+                            <field name="discount_info_note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Discount Report Action -->
+        <record id="action_pos_discount_report" model="ir.actions.act_window">
+            <field name="name">Discount Reports</field>
+            <field name="res_model">pos.order.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('discount', '>', 0)]</field>
+            <field name="context">{'search_default_group_by_reason': 1}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_pos_discount_report_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_pos_discount_report_form')})]"/>
+        </record>
+        
+        <!-- Search View -->
+        <record id="view_pos_discount_report_search" model="ir.ui.view">
+            <field name="name">POS Discount Report Search</field>
+            <field name="model">pos.order.line</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="discount_reason"/>
+                    <field name="discount_requested_by"/>
+                    <field name="discount_approved_by"/>
+                    <field name="product_id"/>
+                    <filter string="Customer Loyalty" name="customer_loyalty" domain="[('discount_reason', '=', 'customer_loyalty')]"/>
+                    <filter string="Bulk Order" name="bulk_order" domain="[('discount_reason', '=', 'bulk_order')]"/>
+                    <filter string="Staff Discount" name="staff_discount" domain="[('discount_reason', '=', 'staff_discount')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Reason" name="group_by_reason" context="{'group_by': 'discount_reason'}"/>
+                        <filter string="Requested By" name="group_by_requested" context="{'group_by': 'discount_requested_by'}"/>
+                        <filter string="Approved By" name="group_by_approved" context="{'group_by': 'discount_approved_by'}"/>
+                        <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Menu Item -->
+        <menuitem id="menu_pos_discount_reports"
+                  name="Discount Reports"
+                  parent="point_of_sale.menu_point_of_sale"
+                  action="action_pos_discount_report"
+                  sequence="50"/>
+                  
+    </data>
+</odoo>

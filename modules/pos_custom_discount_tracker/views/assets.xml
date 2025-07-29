@@ -5,245 +5,253 @@
             <xpath expr="//head" position="inside">
                 <script type="text/javascript">
                     <![CDATA[
-                    console.log('🚀 POS Discount Tracker - Final Version Loading...');
+                    console.log('POS Discount Tracker - Clean Version');
                     
-                    function waitForPOSAndAddButton() {
-                        // Wait for both DOM and POS to be ready
-                        if (document.querySelector('.control-buttons')) {
-                            console.log('✅ Control buttons found, adding discount button...');
-                            addDiscountButton();
-                        } else {
-                            console.log('⏳ Waiting for POS interface...');
-                            setTimeout(waitForPOSAndAddButton, 1000);
-                        }
-                    }
-                    
-                    function addDiscountButton() {
-                        const controlButtons = document.querySelector('.control-buttons');
-                        
-                        if (controlButtons && !controlButtons.querySelector('.discount-info-button')) {
-                            const discountBtn = document.createElement('button');
-                            discountBtn.className = 'btn btn-secondary btn-lg discount-info-button';
-                            discountBtn.innerHTML = '<i class="fa fa-percent"></i> Discount Info';
-                            discountBtn.style.cssText = 'margin-left: 8px; background-color: #f8f9fa; border-color: #875a7b; color: #875a7b;';
-                            
-                            discountBtn.onclick = function() {
-                                handleDiscountInfo();
-                            };
-                            
-                            controlButtons.appendChild(discountBtn);
-                            console.log('✅ Discount Info button added successfully!');
-                            
-                            // Make button more visible after 2 seconds
-                            setTimeout(() => {
-                                discountBtn.style.backgroundColor = '#28a745';
-                                discountBtn.style.borderColor = '#28a745';
-                                discountBtn.style.color = 'white';
-                                console.log('✅ Button activated and ready to use!');
-                            }, 2000);
-                        }
-                    }
-                    
-                    function handleDiscountInfo() {
-                        console.log('🎯 Discount Info button clicked!');
+                    function handleDiscountClick() {
+                        console.log('Clean discount handler starting...');
                         
                         try {
-                            // Try to get POS order and line
-                            let order = null;
-                            let orderline = null;
-                            let posReady = false;
+                            // Get discount reason first
+                            const reason = prompt('Discount Reason:\n\n1. Customer Loyalty\n2. Bulk Order\n3. Promotional\n4. Staff Discount\n5. Other\n\nEnter 1-5:');
+                            if (!reason || reason < 1 || reason > 5) return;
                             
-                            if (window.pos && typeof window.pos.get_order === 'function') {
-                                order = window.pos.get_order();
-                                if (order && typeof order.get_selected_orderline === 'function') {
-                                    orderline = order.get_selected_orderline();
-                                    posReady = true;
-                                }
-                            }
-                            
-                            // Check if we have a selected line with discount
-                            if (posReady && orderline) {
-                                if (orderline.get_discount() === 0) {
-                                    alert('❌ Please apply a discount to the selected product first.');
-                                    return;
-                                }
-                            } else if (posReady) {
-                                alert('❌ Please select a product line first.');
-                                return;
-                            }
-                            
-                            // Get employee list from POS (enhanced detection)
+                            // Get employees from database
                             let employees = [];
-                            let employeeSource = 'none';
+                            let pos = window.pos;
                             
-                            if (window.pos) {
-                                if (window.pos.employees && window.pos.employees.length > 0) {
-                                    employees = window.pos.employees;
-                                    employeeSource = 'pos.employees';
-                                } else if (window.pos.users && window.pos.users.length > 0) {
-                                    employees = window.pos.users;
-                                    employeeSource = 'pos.users';
-                                } else if (window.pos.user) {
-                                    employees = [window.pos.user];
-                                    employeeSource = 'pos.user';
-                                }
-                                
-                                console.log('Employee source:', employeeSource, 'Count:', employees.length);
-                                if (employees.length > 0) {
-                                    console.log('Sample employee:', employees[0]);
-                                }
-                            }
-                            
-                            // Fallback: Common employee names for this demo
-                            if (employees.length === 0) {
+                            if (pos && pos.pos_employees) {
+                                employees = pos.pos_employees;
+                                console.log('Using database employees:', employees.length);
+                            } else if (pos && pos.partners) {
+                                employees = pos.partners.filter(p => !p.is_company && (p.email || p.function)).slice(0, 20);
+                                console.log('Using partner fallback:', employees.length);
+                            } else {
                                 employees = [
-                                    {id: 1, name: 'Administrator'},
-                                    {id: 2, name: 'Manager'},
-                                    {id: 3, name: 'Staff Member'},
-                                    {id: 4, name: 'Assistant'},
-                                    {id: 5, name: 'Supervisor'}
+                                    {id: 1, name: 'Administrator', display_name: 'Administrator (System Admin)', function: 'System Admin'},
+                                    {id: 2, name: 'Manager', display_name: 'Manager (Store Manager)', function: 'Store Manager'},
+                                    {id: 3, name: 'Staff Member', display_name: 'Staff Member (Sales)', function: 'Sales'},
+                                    {id: 4, name: 'Supervisor', display_name: 'Supervisor (Floor Supervisor)', function: 'Floor Supervisor'}
                                 ];
-                                employeeSource = 'fallback';
-                                console.log('Using fallback employee list');
+                                console.log('Using fallback employees');
                             }
                             
-                            // Get discount information
-                            const reason = prompt('💰 DISCOUNT REASON\n\n1. Customer Loyalty\n2. Bulk Order\n3. Insurance Adjustment\n4. Promotional\n5. Staff Discount\n6. Medical Necessity\n7. Other\n\nEnter number (1-7):');
-                            
-                            if (!reason || reason < 1 || reason > 7) {
-                                console.log('❌ Invalid reason selected');
-                                return;
-                            }
-                            
-                            // Enhanced employee selection with better UX
-                            let requested = '';
-                            if (employees && employees.length > 0) {
-                                let employeeList = '👤 SELECT EMPLOYEE (Requested By):\n\n';
-                                employees.forEach((emp, index) => {
-                                    const empName = emp.name || emp.display_name || emp.login || `User ${emp.id}`;
-                                    employeeList += `${index + 1}. ${empName}\n`;
+                            // Enhanced employee selection
+                            function selectEmployee(title) {
+                                let employeeList = `${title}:\n\n`;
+                                
+                                const displayEmployees = employees.slice(0, 15);
+                                displayEmployees.forEach((emp, index) => {
+                                    const displayName = emp.display_name || emp.name;
+                                    employeeList += `${index + 1}. ${displayName}\n`;
                                 });
-                                employeeList += `\n✏️ Enter number (1-${employees.length}) OR type name manually:`;
                                 
-                                const empChoice = prompt(employeeList);
-                                if (!empChoice) return;
+                                employeeList += '\nEnter number (1-' + displayEmployees.length + ') or type name:';
                                 
-                                const empIndex = parseInt(empChoice) - 1;
-                                if (empIndex >= 0 && empIndex < employees.length) {
-                                    const selectedEmp = employees[empIndex];
-                                    requested = selectedEmp.name || selectedEmp.display_name || selectedEmp.login || `User ${selectedEmp.id}`;
-                                } else {
-                                    requested = empChoice.trim();
+                                const choice = prompt(employeeList);
+                                if (!choice) return null;
+                                
+                                // Handle number selection
+                                const empIndex = parseInt(choice) - 1;
+                                if (empIndex >= 0 && empIndex < displayEmployees.length) {
+                                    return displayEmployees[empIndex];
                                 }
-                            } else {
-                                requested = prompt('👤 Requested By (Employee Name):\n\nSuggestions: Administrator, Manager, Staff, Assistant');
-                            }
-                            
-                            if (!requested || !requested.trim()) {
-                                console.log('❌ No employee name provided');
-                                return;
-                            }
-                            
-                            // Enhanced manager selection  
-                            let approved = '';
-                            if (employees && employees.length > 0) {
-                                let managerList = '✅ SELECT MANAGER (Approved By):\n\n';
-                                employees.forEach((emp, index) => {
-                                    const empName = emp.name || emp.display_name || emp.login || `User ${emp.id}`;
-                                    managerList += `${index + 1}. ${empName}\n`;
-                                });
-                                managerList += `\n✏️ Enter number (1-${employees.length}) OR type name manually:`;
                                 
-                                const mgrChoice = prompt(managerList);
-                                if (!mgrChoice) return;
-                                
-                                const mgrIndex = parseInt(mgrChoice) - 1;
-                                if (mgrIndex >= 0 && mgrIndex < employees.length) {
-                                    const selectedMgr = employees[mgrIndex];
-                                    approved = selectedMgr.name || selectedMgr.display_name || selectedMgr.login || `User ${selectedMgr.id}`;
-                                } else {
-                                    approved = mgrChoice.trim();
+                                // Handle manual name entry
+                                if (choice.trim()) {
+                                    return {
+                                        id: null,
+                                        name: choice.trim(),
+                                        display_name: choice.trim(),
+                                        function: 'Manual Entry'
+                                    };
                                 }
-                            } else {
-                                approved = prompt('✅ Approved By (Manager Name):\n\nSuggestions: Administrator, Manager, Supervisor');
+                                
+                                return null;
                             }
                             
-                            // Process data
-                            const reasonValues = ['', 'customer_loyalty', 'bulk_order', 'insurance_adjustment', 'promotional', 'staff_discount', 'medical_necessity', 'other'];
-                            const reasonLabels = ['', 'Customer Loyalty', 'Bulk Order', 'Insurance Adjustment', 'Promotional', 'Staff Discount', 'Medical Necessity', 'Other'];
+                            // Select employees
+                            const requestedEmployee = selectEmployee('SELECT REQUESTING EMPLOYEE');
+                            if (!requestedEmployee) return;
                             
-                            const reasonValue = reasonValues[reason];
-                            const reasonLabel = reasonLabels[reason];
-                            const requestedName = requested.trim();
-                            const approvedName = approved.trim();
+                            const approvedEmployee = selectEmployee('SELECT APPROVING MANAGER');
+                            if (!approvedEmployee) return;
                             
-                            // Save data if POS is ready
-                            if (posReady && orderline) {
-                                // Save to custom fields
-                                orderline.discount_reason = reasonValue;
-                                orderline.discount_requested_by = requestedName;
-                                orderline.discount_approved_by = approvedName;
-                                
-                                // Create a clean discount info line for the note
-                                const discountInfo = `💰 DISCOUNT: ${reasonLabel} | 👤 Req: ${requestedName} | ✅ App: ${approvedName}`;
-                                
-                                // Get current note and add discount info
-                                const currentNote = orderline.get_note() || '';
-                                
-                                // Remove any existing discount info to avoid duplicates
-                                const cleanNote = currentNote.replace(/💰 DISCOUNT:.*$/gm, '').replace(/\[DISCOUNT:.*?\]/g, '').trim();
-                                
-                                // Add the new discount info
-                                const newNote = cleanNote ? cleanNote + '\n' + discountInfo : discountInfo;
-                                orderline.set_note(newNote);
-                                
-                                console.log('💾 DATA SAVED TO DATABASE AND NOTE!', {
-                                    product: orderline.get_product().display_name,
-                                    discount: orderline.get_discount() + '%',
-                                    reason: reasonLabel,
-                                    requested_by: requestedName,
-                                    approved_by: approvedName,
-                                    note_updated: true
-                                });
-                                
-                                alert('✅ DISCOUNT INFORMATION SAVED!\n\n📋 Product: ' + orderline.get_product().display_name + '\n💰 Discount: ' + orderline.get_discount() + '%\n🏷️ Reason: ' + reasonLabel + '\n👤 Requested by: ' + requestedName + '\n✅ Approved by: ' + approvedName + '\n\n💾 Saved to database\n📝 Visible in customer note below');
-                                
-                            } else {
-                                // Fallback mode
-                                console.log('📝 FALLBACK MODE - Data collected:', {
-                                    reason: reasonLabel,
-                                    requested_by: requestedName,
-                                    approved_by: approvedName
-                                });
-                                
-                                alert('✅ DISCOUNT INFORMATION COLLECTED!\n\n🏷️ Reason: ' + reasonLabel + '\n👤 Requested by: ' + requestedName + '\n✅ Approved by: ' + approvedName + '\n\n⚠️ POS not fully ready - data shown in console\n(Select a product with discount and try again for full integration)');
+                            // Process the data
+                            const reasons = ['', 'customer_loyalty', 'bulk_order', 'promotional', 'staff_discount', 'other'];
+                            const reasonLabels = ['', 'Customer Loyalty', 'Bulk Order', 'Promotional', 'Staff Discount', 'Other'];
+                            
+                            const discountData = {
+                                reason: reasons[reason],
+                                reasonLabel: reasonLabels[reason],
+                                requestedEmployee: requestedEmployee,
+                                approvedEmployee: approvedEmployee,
+                                timestamp: new Date().toISOString()
+                            };
+                            
+                            console.log('Clean discount data:', discountData);
+                            
+                            // Save to POS for backend processing
+                            let savedToBackend = false;
+                            try {
+                                if (pos && pos.get_order) {
+                                    const order = pos.get_order();
+                                    if (order && order.orderlines) {
+                                        for (let line of order.orderlines) {
+                                            if (line.get_discount && line.get_discount() > 0) {
+                                                line.discount_reason = discountData.reason;
+                                                line.discount_requested_by = requestedEmployee.name;
+                                                line.discount_approved_by = approvedEmployee.name;
+                                                line.discount_requested_by_id = requestedEmployee.id;
+                                                line.discount_approved_by_id = approvedEmployee.id;
+                                                line.discount_timestamp = discountData.timestamp;
+                                                
+                                                savedToBackend = true;
+                                                console.log('Saved to POS orderline for backend processing');
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.log('Backend save failed:', e);
                             }
+                            
+                            // Update interface display - position above Total
+                            updateCleanDisplay(discountData);
+                            
+                            // Show success message
+                            const backendStatus = savedToBackend ? 
+                                'SAVED TO DATABASE!' : 
+                                'Will be saved to database when order is completed.';
+                            
+                            alert(`SUCCESS! ${backendStatus}\n\nReason: ${discountData.reasonLabel}\nRequested by: ${requestedEmployee.display_name}\nApproved by: ${approvedEmployee.display_name}\n\nThis information is now saved to the database.`);
                             
                         } catch (error) {
-                            console.error('❌ Error in discount handler:', error);
-                            alert('❌ An error occurred while processing discount information. Please try again.');
+                            console.error('Clean handler error:', error);
+                            alert('Error: ' + error.message);
                         }
                     }
                     
-                    // Auto-start when page loads
-                    document.addEventListener('DOMContentLoaded', function() {
-                        console.log('📄 DOM loaded, initializing POS Discount Tracker...');
-                        setTimeout(waitForPOSAndAddButton, 1000);
-                    });
+                    function updateCleanDisplay(discountData) {
+                        console.log('Updating clean display above Total');
+                        
+                        // Remove any existing discount info
+                        const existing = document.querySelectorAll('.clean-discount-info');
+                        existing.forEach(el => el.remove());
+                        
+                        // Create clean display text without emojis
+                        const linkedIndicator = discountData.requestedEmployee.id ? ' (Database Linked)' : '';
+                        const displayText = `${discountData.reasonLabel} | Requested: ${discountData.requestedEmployee.name} | Approved: ${discountData.approvedEmployee.name}${linkedIndicator}`;
+                        
+                        // Find the Total element and add discount info above it
+                        setTimeout(() => {
+                            // Look for Total amount element
+                            const totalElements = document.querySelectorAll('*');
+                            let totalElement = null;
+                            
+                            for (let el of totalElements) {
+                                if (el.textContent && el.textContent.includes('Total:') && el.textContent.includes('$')) {
+                                    totalElement = el;
+                                    break;
+                                }
+                            }
+                            
+                            if (totalElement) {
+                                const discountDiv = document.createElement('div');
+                                discountDiv.className = 'clean-discount-info';
+                                discountDiv.style.cssText = `
+                                    background-color: #e3f2fd;
+                                    color: #1976d2;
+                                    padding: 8px 12px;
+                                    margin: 5px 0;
+                                    border-left: 4px solid #1976d2;
+                                    font-size: 13px;
+                                    font-weight: 500;
+                                    border-radius: 4px;
+                                    line-height: 1.4;
+                                `;
+                                discountDiv.innerHTML = `DISCOUNT INFO: ${displayText}`;
+                                
+                                // Insert before the Total element
+                                totalElement.parentNode.insertBefore(discountDiv, totalElement);
+                                console.log('Clean display added above Total');
+                            } else {
+                                // Fallback: add to order container
+                                const orderContainer = document.querySelector('.order, .orderlines, [class*="order"]');
+                                if (orderContainer) {
+                                    const discountDiv = document.createElement('div');
+                                    discountDiv.className = 'clean-discount-info';
+                                    discountDiv.style.cssText = `
+                                        background-color: #e3f2fd;
+                                        color: #1976d2;
+                                        padding: 8px 12px;
+                                        margin: 5px;
+                                        border-left: 4px solid #1976d2;
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        border-radius: 4px;
+                                        text-align: center;
+                                    `;
+                                    discountDiv.innerHTML = `DISCOUNT INFO: ${displayText}`;
+                                    
+                                    orderContainer.appendChild(discountDiv);
+                                    console.log('Clean display added to order container');
+                                }
+                            }
+                        }, 300);
+                    }
                     
-                    // Also try when window loads
-                    window.addEventListener('load', function() {
-                        console.log('🌐 Window loaded, starting discount tracker...');
-                        setTimeout(waitForPOSAndAddButton, 2000);
-                    });
+                    // Add clean button (only in control panel, not at bottom)
+                    function addCleanButton() {
+                        // Only add to main control buttons area
+                        const containers = document.querySelectorAll('.control-buttons');
+                        
+                        containers.forEach(container => {
+                            // Skip if this is the bottom container (has payment button nearby)
+                            const hasPayment = container.closest('*').textContent && 
+                                              container.closest('*').textContent.includes('Payment');
+                            
+                            if (!hasPayment && !container.querySelector('.clean-discount-btn')) {
+                                const btn = document.createElement('button');
+                                btn.className = 'btn clean-discount-btn';
+                                btn.innerHTML = 'Discount Info';
+                                btn.style.cssText = `
+                                    margin: 4px; 
+                                    padding: 10px 15px; 
+                                    font-weight: bold; 
+                                    background: linear-gradient(45deg, #1976d2, #2196f3) !important;
+                                    border: none !important;
+                                    color: white !important;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-size: 12px;
+                                `;
+                                
+                                btn.onclick = handleDiscountClick;
+                                container.appendChild(btn);
+                                console.log('Clean button added to main control area');
+                            }
+                        });
+                        
+                        // Remove any bottom buttons
+                        const bottomButtons = document.querySelectorAll('[class*="discount"] button');
+                        bottomButtons.forEach(btn => {
+                            if (btn.closest('.control-buttons') && 
+                                btn.closest('.control-buttons').textContent.includes('Payment')) {
+                                btn.remove();
+                                console.log('Removed bottom discount button');
+                            }
+                        });
+                    }
                     
-                    // Periodic check to ensure button stays available
-                    setInterval(function() {
-                        if (document.querySelector('.control-buttons') && !document.querySelector('.discount-info-button')) {
-                            console.log('🔄 Re-adding discount button...');
-                            addDiscountButton();
-                        }
-                    }, 5000);
+                    // Initialize clean system
+                    setTimeout(addCleanButton, 1000);
+                    setInterval(addCleanButton, 5000);
+                    
+                    document.addEventListener('DOMContentLoaded', () => setTimeout(addCleanButton, 2000));
+                    window.addEventListener('load', () => setTimeout(addCleanButton, 3000));
+                    
+                    console.log('Clean POS Discount Tracker ready!');
                     ]]>
                 </script>
             </xpath>
